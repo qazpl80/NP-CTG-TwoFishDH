@@ -1,9 +1,8 @@
-options_list = ['Encrypt','Decrypt']
+
 def menu(options_list):
     print('Two Fish-DH\n=========')
-    for i in range(1,len(options_list)+1):
-        print("[{}]".format(i),options_list[i-1])
-    print()
+    print("1. Select Option 1 to Encrypt")
+    print("2. Select Option 2 to Decrypt")
     print('[0] Exit')
 
 
