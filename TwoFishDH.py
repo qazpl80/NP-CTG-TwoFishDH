@@ -62,8 +62,12 @@ def menu(options_list):
 
 while True:
     menu(options_list)
-    option = int(input("Enter your option: "))
-    if (option == 0):
+    try:
+        option = int(input("Enter your option: "))
+    except ValueError:
+        print('Invalid Input, please try again')
+        continue
+    if option == 0:
         break;
     elif option == 1:
         xorkey0 = random.randint(0,255)
@@ -72,7 +76,7 @@ while True:
         xorkey3 = random.randint(0,255)
 
         #Split IP Address into 4 parts
-        ipaddress = (input('Enter the ip address you want to encrypt: '))
+        ipaddress = input('Enter the ip address you want to encrypt: ')
         iplist = ipaddress.split('.')
         ip1 = int(iplist[0])
         ip2 = int(iplist[1])
@@ -115,10 +119,12 @@ while True:
         Encrypt = str(Sxor1) + '.' + str(Sxor2) + '.' + str(Sxor3) + '.' + str(Sxor4)
         print(Encrypt)
        
+    elif option == 2:
+        ipaddr = input('Enter the ip address you want to decrypt: ')
+        PHTd(dh,ainv,binv)
     else:
-       decrypt()
-        
-
+        print("Invalid Option")
+        continue
 
 
 
