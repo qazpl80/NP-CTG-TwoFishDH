@@ -1,4 +1,3 @@
-#import ipaddress
 import random
 #KprA = A = a^al mod p			KprB = B = a^b mod p
 #KpubA = B^al = (a^b)^al mod p		KpubB = A^b = (a^al)^b mod p
@@ -51,7 +50,7 @@ def myXOR(x, y):
 
 
 
-def menu(options_list):
+def menu():
     print('Two Fish-DH\n=========')
     print("1. Select Option 1 to Encrypt")
     print("2. Select Option 2 to Decrypt")
@@ -61,7 +60,7 @@ def menu(options_list):
 
 
 while True:
-    menu(options_list)
+    menu()
     try:
         option = int(input("Enter your option: "))
     except ValueError:
@@ -121,7 +120,19 @@ while True:
        
     elif option == 2:
         ipaddr = input('Enter the ip address you want to decrypt: ')
-        PHTd(dh,ainv,binv)
+        diplist = ipaddress.split('.')
+        dip1 = int(diplist[0])
+        dip2 = int(diplist[1])
+        dip3 = int(diplist[2])
+        dip4 = int(diplist[3])
+        #reverse xor 
+
+        #reverse pht
+        PHTd(dh,)
+
+        #reverse xor
+        
+       
     else:
         print("Invalid Option")
         continue
