@@ -22,8 +22,6 @@ def dh():
     s1 = (base**a) % mod
     dh = (s1**b) % mod
     return dh
-    
-
 
 def menu():
     print('Two Fish-DH\n=========')
@@ -41,9 +39,30 @@ def menu():
 #<<	Bitwise left shift	x<< 2 = 40 (0010 1000)
 
 def myXOR(x, y): 
-    res =  x^y
-    return res
+    xb = bin(x)
+    yb = bin(y)
 
+    xxb = bin(x)[2:].zfill(8)
+    yyb = bin(y)[2:].zfill(8)
+
+    xor = ''
+    for i in range(len(xxb)):
+        if xxb[i] != yyb[i]:
+            xor += '1'
+        else:
+            xor += '0'
+    print(int(xor,2))
+    return int(xor,2)
+
+dh = dh()
+xorkey0 = random.randint(0,255)
+xk0 = xorkey0
+xorkey1 = random.randint(0,255)
+xk1 = xorkey1
+xorkey2 = random.randint(0,255)
+xk2 = xorkey2
+xorkey3 = random.randint(0,255)
+xk3 = xorkey3
 
 while True:
     menu()
@@ -55,10 +74,6 @@ while True:
     if option == 0:
         break;
     elif option == 1:
-        xorkey0 = random.randint(0,255)
-        xorkey1 = random.randint(0,255)
-        xorkey2 = random.randint(0,255)
-        xorkey3 = random.randint(0,255)
 
         #Split IP Address into 4 parts
         ipaddress = input('Enter the ip address you want to encrypt: ')
@@ -68,42 +83,24 @@ while True:
         ip3 = int(iplist[2])
         ip4 = int(iplist[3])
 
-        #XOR of xorkey and IP Address
-        x0 = ip1 
-        y0 = xorkey0
-        fxor1 = myXOR(x0,y0)
+        ##XOR of xorkey and IP Address
+        #fxor1 = myXOR(ip1,xk0)
+        #fxor2 = myXOR(ip2,xk1)
+        #fxor3 = myXOR(ip3,xk2)
+        #fxor4 = myXOR(ip4,xk3)
+        #print(fxor1 ,fxor2, fxor3, fxor4)
 
-        x1 = ip2
-        y1 = xorkey1
-        fxor2 = myXOR(x1,y1)
-
-        x2 = ip3
-        y2 = xorkey2
-        fxor3 = myXOR(x2,y2)
-
-        x3 = ip4
-        y3 = xorkey3
-        fxor4 = myXOR(x3,y3)
-        print(fxor1 ,fxor2, fxor3, fxor4)
-
-        dh = dh()
-        print(dh)
         #PHT using DH as modulus and IP Address into per 2 bytes
-        ainv , binv = PHTe(fxor1,fxor2,dh)
-        ipa1 = ainv
-        ipa2 = binv
-        cinv , dinv = PHTe(fxor3,fxor4,dh)
-        ipa3 = cinv
-        ipa4 = dinv
-        print(ainv)
+        #ainv , binv = PHTe(fxor1,fxor2,dh)
+        #cinv , dinv = PHTe(fxor3,fxor4,dh)
+        ainv , binv = PHTe(ip1,ip2,dh)
+        cinv , dinv = PHTe(ip1,ip2,dh)
         
         #XOR again with the same key
-        Sxor1 = myXOR(ipa1,y0)
-        Sxor2 = myXOR(ipa2,y1)
-        Sxor3 = myXOR(ipa3,y2)
-        Sxor4 = myXOR(ipa4,y3)
-        print(fxor1)
-        print(Sxor1)
+        Sxor1 = myXOR(ainv,xk0)
+        Sxor2 = myXOR(binv,xk1)
+        Sxor3 = myXOR(cinv,xk2)
+        Sxor4 = myXOR(dinv,xk3)
         Encrypt = str(Sxor1) + '.' + str(Sxor2) + '.' + str(Sxor3) + '.' + str(Sxor4)
         print(Encrypt)
        
@@ -115,26 +112,20 @@ while True:
         dip3 = int(diplist[2])
         dip4 = int(diplist[3])
         #reverse xor 
-        Rxor1 = myXOR(dip1,xorkey0)
-        Rxor2 = myXOR(dip2,xorkey1)
-        Rxor3 = myXOR(dip3,xorkey2)
-        Rxor4 = myXOR(dip4,xorkey3)
-        print(Rxor1)
+        Rxor1 = myXOR(dip1,xk0)
+        Rxor2 = myXOR(dip2,xk1)
+        Rxor3 = myXOR(dip3,xk2)
+        Rxor4 = myXOR(dip4,xk3)
+        print(Rxor1 ,Rxor2, Rxor3, Rxor4)
         #reverse pht
         ra , rb = PHTd(Rxor1,Rxor2,dh)
-        dipa1 = ra
-        dipa2 = rb
         rc , rd = PHTd(Rxor3,Rxor4,dh)
-        dipa3 = rc
-        dipa4 = rd
-        print(dipa1)
         #reverse xor
-        opa1 = myXOR(dipa1,xorkey0)
-        opa2 = myXOR(dipa2,xorkey1)
-        opa3 = myXOR(dipa3,xorkey2)
-        opa4 = myXOR(dipa4,xorkey3)
-        decrypt = str(opa1) + "." + str(opa2) +'.' + str(opa3) + '.' +  str(opa4)
-        print(opa1)
+        #opa1 = myXOR(ra,xk0)
+        #opa2 = myXOR(rb,xk1)
+        #opa3 = myXOR(rc,xk2)
+        #opa4 = myXOR(rd,xk3)
+        decrypt = str(ra) + "." + str(rb) +'.' + str(rc) + '.' +  str(rd)
         print(decrypt)
     else:
         print("Invalid Option")
