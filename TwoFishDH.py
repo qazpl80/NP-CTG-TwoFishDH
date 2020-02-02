@@ -22,7 +22,47 @@ def dh():
     s2 = (base**b) % mod
     dh = (s1**b) % mod
     return dh
-     
+
+def menu():
+    print('Two Fish-DH\n=========')
+    print("1. Select Option 1 to Encrypt")
+    print("2. Select Option 2 to Decrypt")
+    print('[0] Exit')
+
+#x = 10 (0000 1010), y = 4 (0000 0100),
+#Operator	Meaning	        Example
+#&	Bitwise AND	        x& y = 0 (0000 0000)
+#|	Bitwise OR	        x | y = 14 (0000 1110)
+#~	Bitwise NOT	        ~x = -11 (1111 0101)
+#^	Bitwise XOR 	    x ^ y = 14 (0000 1110)
+#>>	Bitwise right shift	x>> 2 = 2 (0000 0010)
+#<<	Bitwise left shift	x<< 2 = 40 (0010 1000)
+
+def myXAND(x, y): 
+    reslt = 0 # Initialize result 
+  
+    # Assuming 32-bit Integer 
+    for i in range(31, -1, -1): 
+          
+        # Find current bits in x and y 
+        b1 = x & (1 << i) 
+        b2 = y & (1 << i) 
+        b1 = min(b1, 1) 
+        b2 = min(b2, 1) 
+  
+        # If both are 1 then 0  
+        # else xor is same as OR 
+        xANDBit = 0
+        if (b1 & b2):
+            xANDBit = 0
+        else: 
+            xANDBit = (b1 | b2)
+  
+        # Update result 
+        reslt <<= 1; 
+        reslt |= xANDBit 
+    return reslt
+
 def myXOR(x, y): 
     res = 0 # Initialize result 
   
@@ -47,16 +87,6 @@ def myXOR(x, y):
         res <<= 1; 
         res |= xoredBit 
     return res
-
-
-
-def menu():
-    print('Two Fish-DH\n=========')
-    print("1. Select Option 1 to Encrypt")
-    print("2. Select Option 2 to Decrypt")
-    print('[0] Exit')
-
-
 
 
 while True:
@@ -114,25 +144,40 @@ while True:
         Sxor2 = myXOR(ipa2,xorkey1)
         Sxor3 = myXOR(ipa3,xorkey2)
         Sxor4 = myXOR(ipa4,xorkey3)
-
+        print(fxor1)
+        print(Sxor1)
         Encrypt = str(Sxor1) + '.' + str(Sxor2) + '.' + str(Sxor3) + '.' + str(Sxor4)
         print(Encrypt)
        
     elif option == 2:
-        ipaddr = input('Enter the ip address you want to decrypt: ')
+        ipaddr = input('Enter the ip address you want to decrypt (must be immediate, do not close interface): ')
         diplist = ipaddress.split('.')
         dip1 = int(diplist[0])
         dip2 = int(diplist[1])
         dip3 = int(diplist[2])
         dip4 = int(diplist[3])
         #reverse xor 
-
+        Rxor1 = myXAND(dip1,xorkey0)
+        Rxor2 = myXAND(dip2,xorkey1)
+        Rxor3 = myXAND(dip3,xorkey2)
+        Rxor4 = myXAND(dip4,xorkey3)
+        print(Rxor1)
         #reverse pht
-        PHTd(dh,)
+        ra , rb = PHTd(dh,Rxor1,Rxor2)
+        dipa1 = ra
+        dipa2 = rb
+        rc , rd = PHTd(dh, Rxor3,Rxor4)
+        dipa3 = rc
+        dipa4 = rd
 
         #reverse xor
-        
-       
+        opa1 = myXAND(dipa1,xorkey0)
+        opa2 = myXAND(dipa2,xorkey1)
+        opa3 = myXAND(dipa3,xorkey2)
+        opa4 = myXAND(dipa3,xorkey3)
+        decrypt = str(opa1) + "." + str(opa2) +'.' + str(opa3) + '.' +  str(opa4)
+        print(opa1)
+        print(decrypt)
     else:
         print("Invalid Option")
         continue
