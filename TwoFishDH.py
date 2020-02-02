@@ -1,14 +1,15 @@
+#Done by Gladys Chua Ling Hui, Tan Yuan Ming and Chua Zhe Yu 
 import random
 #KprA = A = a^al mod p			KprB = B = a^b mod p
 #KpubA = B^al = (a^b)^al mod p		KpubB = A^b = (a^al)^b mod p
 #KAB = B^al = (a^b)^al mod p		KAB = A^b = (a^al)^b mod p
 
-def PHTe(dh,a,b):
+def PHTe(a,b,dh):
     ainv = ((a+b) % (2**dh))
     binv = ((a+(2*b)) % (2**dh))
     return ainv,binv  
 
-def PHTd(dh,ainv,binv):
+def PHTd(ainv,binv,dh):
     a = (((2*ainv) - binv) % (2**dh))
     b = ((binv - ainv) % (2 **dh))
     return a,b
@@ -19,9 +20,10 @@ def dh():
     a = random.randint(0,255)
     b = random.randint(0,255)
     s1 = (base**a) % mod
-    s2 = (base**b) % mod
     dh = (s1**b) % mod
     return dh
+    
+
 
 def menu():
     print('Two Fish-DH\n=========')
@@ -38,54 +40,8 @@ def menu():
 #>>	Bitwise right shift	x>> 2 = 2 (0000 0010)
 #<<	Bitwise left shift	x<< 2 = 40 (0010 1000)
 
-def myXAND(x, y): 
-    reslt = 0 # Initialize result 
-  
-    # Assuming 32-bit Integer 
-    for i in range(31, -1, -1): 
-          
-        # Find current bits in x and y 
-        b1 = x & (1 << i) 
-        b2 = y & (1 << i) 
-        b1 = min(b1, 1) 
-        b2 = min(b2, 1) 
-  
-        # If both are 1 then 0  
-        # else xor is same as OR 
-        xANDBit = 0
-        if (b1 & b2):
-            xANDBit = 0
-        else: 
-            xANDBit = (b1 | b2)
-  
-        # Update result 
-        reslt <<= 1; 
-        reslt |= xANDBit 
-    return reslt
-
 def myXOR(x, y): 
-    res = 0 # Initialize result 
-  
-    # Assuming 32-bit Integer 
-    for i in range(31, -1, -1): 
-          
-        # Find current bits in x and y 
-        b1 = x & (1 << i) 
-        b2 = y & (1 << i) 
-        b1 = min(b1, 1) 
-        b2 = min(b2, 1) 
-  
-        # If both are 1 then 0  
-        # else xor is same as OR 
-        xoredBit = 0
-        if (b1 & b2): 
-            xoredBit = 0
-        else: 
-            xoredBit = (b1 | b2) 
-  
-        # Update result 
-        res <<= 1; 
-        res |= xoredBit 
+    res =  x^y
     return res
 
 
@@ -133,17 +89,19 @@ while True:
         dh = dh()
         print(dh)
         #PHT using DH as modulus and IP Address into per 2 bytes
-        ainv , binv = PHTe(dh,fxor1,fxor2)
+        ainv , binv = PHTe(fxor1,fxor2,dh)
         ipa1 = ainv
         ipa2 = binv
-        cinv , dinv = PHTe(dh,fxor3,fxor4)
+        cinv , dinv = PHTe(fxor3,fxor4,dh)
         ipa3 = cinv
         ipa4 = dinv
-
-        Sxor1 = myXOR(ipa1,xorkey0)
-        Sxor2 = myXOR(ipa2,xorkey1)
-        Sxor3 = myXOR(ipa3,xorkey2)
-        Sxor4 = myXOR(ipa4,xorkey3)
+        print(ainv)
+        
+        #XOR again with the same key
+        Sxor1 = myXOR(ipa1,y0)
+        Sxor2 = myXOR(ipa2,y1)
+        Sxor3 = myXOR(ipa3,y2)
+        Sxor4 = myXOR(ipa4,y3)
         print(fxor1)
         print(Sxor1)
         Encrypt = str(Sxor1) + '.' + str(Sxor2) + '.' + str(Sxor3) + '.' + str(Sxor4)
@@ -151,30 +109,30 @@ while True:
        
     elif option == 2:
         ipaddr = input('Enter the ip address you want to decrypt (must be immediate, do not close interface): ')
-        diplist = ipaddress.split('.')
+        diplist = ipaddr.split('.')
         dip1 = int(diplist[0])
         dip2 = int(diplist[1])
         dip3 = int(diplist[2])
         dip4 = int(diplist[3])
         #reverse xor 
-        Rxor1 = myXAND(dip1,xorkey0)
-        Rxor2 = myXAND(dip2,xorkey1)
-        Rxor3 = myXAND(dip3,xorkey2)
-        Rxor4 = myXAND(dip4,xorkey3)
+        Rxor1 = myXOR(dip1,xorkey0)
+        Rxor2 = myXOR(dip2,xorkey1)
+        Rxor3 = myXOR(dip3,xorkey2)
+        Rxor4 = myXOR(dip4,xorkey3)
         print(Rxor1)
         #reverse pht
-        ra , rb = PHTd(dh,Rxor1,Rxor2)
+        ra , rb = PHTd(Rxor1,Rxor2,dh)
         dipa1 = ra
         dipa2 = rb
-        rc , rd = PHTd(dh, Rxor3,Rxor4)
+        rc , rd = PHTd(Rxor3,Rxor4,dh)
         dipa3 = rc
         dipa4 = rd
-
+        print(dipa1)
         #reverse xor
-        opa1 = myXAND(dipa1,xorkey0)
-        opa2 = myXAND(dipa2,xorkey1)
-        opa3 = myXAND(dipa3,xorkey2)
-        opa4 = myXAND(dipa3,xorkey3)
+        opa1 = myXOR(dipa1,xorkey0)
+        opa2 = myXOR(dipa2,xorkey1)
+        opa3 = myXOR(dipa3,xorkey2)
+        opa4 = myXOR(dipa4,xorkey3)
         decrypt = str(opa1) + "." + str(opa2) +'.' + str(opa3) + '.' +  str(opa4)
         print(opa1)
         print(decrypt)
